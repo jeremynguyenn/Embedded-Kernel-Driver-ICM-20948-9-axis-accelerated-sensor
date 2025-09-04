@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (C) 2024 Invensense, Inc.
+ * Copyright (C) 2025 Invensense, Inc.
  * Author:  Nguyen nhan
  */
 
@@ -91,47 +91,47 @@ static int inv_icm20948_accel_read_raw(struct iio_dev *indio_dev,
 		/* Read the current Bank value */
 		ret = regmap_read(st->map, INV_ICM20948_REG_BANK_SEL, &bank_val);
 		if (ret) {
-			dev_err(dev, "读取当前Bank失败: %d\n", ret);
+			dev_err(dev, "Failed to read the current Bank: %d\n", ret);
 			mutex_unlock(&st->lock);
 			return ret;
 		}
-		dev_info(dev, "当前Bank值: 0x%02x\n", bank_val);
+		dev_info(dev, "Current Bank value: 0x%02x\n", bank_val);
 
 		/* Ensure we are in bank 0 */
 		ret = inv_icm20948_set_bank(st, INV_ICM20948_BANK_0);
 		if (ret) {
-			dev_err(dev, "切换到Bank 0失败: %d\n", ret);
+			dev_err(dev, "Switch to Bank 0 failed: %d\n", ret);
 			mutex_unlock(&st->lock);
 			return ret;
 		}
 
-		/* 验证Bank切换 */
+		/* Verify Bank Switch */
 		ret = regmap_read(st->map, INV_ICM20948_REG_BANK_SEL, &bank_val);
 		if (ret) {
-			dev_err(dev, "切换后读取Bank失败: %d\n", ret);
+			dev_err(dev, "Failed to read Bank after switching: %d\n", ret);
 			mutex_unlock(&st->lock);
 			return ret;
 		}
-		dev_info(dev, "切换后Bank值: 0x%02x\n", bank_val);
+		dev_info(dev, "Bank value after switching: 0x%02x\n", bank_val);
 
-		/* 添加延时，确保Bank切换完成 */
+		/* Add a delay to ensure that the bank switch is completed */
 		msleep(10);
-		dev_info(dev, "Bank切换延时完成，准备读取加速度计数据\n");
+		dev_info(dev, "Bank switching delay is completed, ready to read accelerometer data\n");
 
 		ret = regmap_bulk_read(st->map,
 				      INV_ICM20948_REG_ACCEL_XOUT_H + chan->scan_index * 2,
 				      &data, sizeof(data));
-		dev_info(dev, "加速度计数据读取完成，准备释放互斥锁\n");
+		dev_info(dev, "Accelerometer data reading is complete, ready to release the mutex lock\n");
 		mutex_unlock(&st->lock);
-		dev_info(dev, "互斥锁已释放\n");
+		dev_info(dev, "Mutex released\n");
 
 		if (ret) {
-			dev_err(dev, "加速度计数据读取失败: %d\n", ret);
+			dev_err(dev, "Accelerometer data reading failed: %d\n", ret);
 			return ret;
 		}
 
 		*val = be16_to_cpu(data);
-		dev_info(dev, "加速度计原始值: %d\n", *val);
+		dev_info(dev, "Accelerometer raw value: %d\n", *val);
 		return IIO_VAL_INT;
 
 	case IIO_CHAN_INFO_SCALE:
@@ -140,8 +140,8 @@ static int inv_icm20948_accel_read_raw(struct iio_dev *indio_dev,
 		return IIO_VAL_INT_PLUS_NANO;
 
 	case IIO_CHAN_INFO_SAMP_FREQ:
-		/* 返回实际设置的采样率，而不是硬编码值 */
-		*val = 1125 / (st->conf.accel.odr + 1); /* 根据分频值计算实际采样率 */
+		/* Returns the actual set sampling rate, not a hardcoded value */
+		*val = 1125 / (st->conf.accel.odr + 1); /* Calculate the actual sampling rate based on the frequency division value */
 		return IIO_VAL_INT;
 
 	default:
@@ -159,12 +159,12 @@ static int inv_icm20948_accel_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_SCALE:
-		/* 支持直接写入G值 */
-		dev_info(dev, "加速度计设置量程: val=%d, val2=%d\n", val, val2);
+		/* Support direct writing of G value */
+		dev_info(dev, "Accelerometer range setting: val=%d, val2=%d\n", val, val2);
 		
-		/* 检查是否是直接写入G值的情况 */
+		/* Check whether the G value is written directly */
 		if (val2 == 0) {
-			/* 直接写入G值的情况 */
+			/* Directly writing G value */
 			switch (val) {
 			case 2:
 				i = INV_ICM20948_ACCEL_FS_2G;
@@ -179,10 +179,10 @@ static int inv_icm20948_accel_write_raw(struct iio_dev *indio_dev,
 				i = INV_ICM20948_ACCEL_FS_16G;
 				break;
 			default:
-				dev_err(dev, "不支持的加速度计G值: %d，请使用2/4/8/16\n", val);
+				dev_err(dev, "Unsupported accelerometer G-value: %d，Please use 2/4/8/16\n", val);
 				return -EINVAL;
 			}
-			dev_info(dev, "直接设置加速度计量程为 %d G (索引: %d)\n", val, i);
+			dev_info(dev, "Directly set the accelerometer range to %d G (index: %d)\n", val, i);
 			mutex_lock(&st->lock);
 			ret = inv_icm20948_set_accel_fs(st, i);
 			if (!ret)
@@ -191,12 +191,12 @@ static int inv_icm20948_accel_write_raw(struct iio_dev *indio_dev,
 			return ret;
 		}
 		
-		/* 传统方式：通过scale值设置量程 */
+		/* Traditional method: set the range by scale value */
 		for (i = 0; i < ARRAY_SIZE(inv_icm20948_accel_fs_map); i++) {
 			int scale_val = 1000000000 / inv_icm20948_accel_fs_map[i];
-			dev_info(dev, "比较量程[%d]: 期望值=%d, 计算值=%d\n", i, val2, scale_val);
+			dev_info(dev, "Compare range[%d]: expected value=%d, Calculated value=%d\n", i, val2, scale_val);
 			if (val == 0 && val2 == scale_val) {
-				dev_info(dev, "找到匹配的加速度计量程: %d\n", i);
+				dev_info(dev, "Find a matching accelerometer scale: %d\n", i);
 				mutex_lock(&st->lock);
 				ret = inv_icm20948_set_accel_fs(st, i);
 				if (!ret)
@@ -205,7 +205,7 @@ static int inv_icm20948_accel_write_raw(struct iio_dev *indio_dev,
 				return ret;
 			}
 		}
-		dev_err(dev, "未找到匹配的加速度计量程\n");
+		dev_err(dev, "No matching accelerometer range found\n");
 		return -EINVAL;
 
 	case IIO_CHAN_INFO_SAMP_FREQ:
@@ -213,14 +213,14 @@ static int inv_icm20948_accel_write_raw(struct iio_dev *indio_dev,
 			struct device *dev = regmap_get_device(st->map);
 			if (val <= 0)
 				return -EINVAL;
-			dev_info(dev, "设置加速度计采样率: %dHz\n", val);
+			dev_info(dev, "Set the accelerometer sampling rate: %dHz\n", val);
 			mutex_lock(&st->lock);
 			ret = inv_icm20948_set_sensor_rate(st, 1, val);
 			mutex_unlock(&st->lock);
 			if (ret)
-				dev_err(dev, "设置加速度计采样率失败: %d\n", ret);
+				dev_err(dev, "Failed to set accelerometer sampling rate: %d\n", ret);
 			else
-				dev_info(dev, "设置加速度计采样率成功: %dHz\n", val);
+				dev_info(dev, "The accelerometer sampling rate was set successfully.: %dHz\n", val);
 			return ret;
 		}
 
@@ -246,7 +246,7 @@ static const struct iio_info inv_icm20948_accel_info = {
 	.validate_trigger = inv_icm20948_accel_validate_trigger,
 };
 
-/* 将trigger_handler改为非静态函数，使其在buffer.c中可见 */
+/* Change trigger_handler to a non-static function to make it visible in buffer.c */
 irqreturn_t inv_icm20948_accel_trigger_handler(int irq, void *p)
 {
 	struct iio_poll_func *pf = p;
@@ -306,7 +306,7 @@ struct iio_dev *inv_icm20948_accel_init(struct inv_icm20948_state *st)
 	/* Store the same state pointer for all sensors */
 	iio_device_set_drvdata(indio_dev, st);
 
-	/* 只关联触发器，不设置触发缓冲区，这由inv_icm20948_setup_trigger统一处理 */
+	/* Only associate the trigger, do not set the trigger buffer, this is handled uniformly by inv_icm20948_setup_trigger */
 	if (st->trig) {
 		indio_dev->trig = st->trig;
 	}
