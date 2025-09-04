@@ -61,34 +61,34 @@ static int inv_icm20948_accel_read_raw(struct iio_dev *indio_dev,
 
 	st = iio_device_get_drvdata(indio_dev);
 
-	/* 安全检查：确保状态结构体和regmap有效 */
+	/* Safety check: ensure that the state structure and regmap are valid */
 	if (!st) {
-		pr_err("ICM20948: 加速度计传感器状态结构为空\n");
+		pr_err("ICM20948: Accelerometer sensor status structure is empty\n");
 		return -EINVAL;
 	}
 
 	if (!st->map) {
-		pr_err("ICM20948: 加速度计传感器regmap为空\n");
+		pr_err("ICM20948: Accelerometer sensor regmap is empty\n");
 		return -EINVAL;
 	}
 
-	/* 使用pr_debug而不是dev_info，避免依赖设备指针 */
-	pr_debug("ICM20948: 加速度计传感器读取开始\n");
+	/* Use pr_debug instead of dev_info to avoid relying on device pointers */
+	pr_debug("ICM20948: Accelerometer sensor reading started\n");
 
-	/* 获取设备指针前先确保map有效 */
+	/* Make sure the map is valid before getting the device pointer */
 	dev = regmap_get_device(st->map);
 	if (!dev) {
-		pr_err("ICM20948: 无法获取加速度计传感器设备指针\n");
+		pr_err("ICM20948: Unable to obtain the accelerometer sensor device pointer\n");
 		return -EINVAL;
 	}
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
-		dev_info(dev, "加速度计读取开始，准备获取互斥锁\n");
+		dev_info(dev, "Accelerometer reading begins, prepare to acquire the mutex lock\n");
 		mutex_lock(&st->lock);
-		dev_info(dev, "已获取互斥锁，准备切换到Bank 0\n");
+		dev_info(dev, "Mutex lock acquired, ready to switch to Bank 0\n");
 
-		/* 读取当前Bank值 */
+		/* Read the current Bank value */
 		ret = regmap_read(st->map, INV_ICM20948_REG_BANK_SEL, &bank_val);
 		if (ret) {
 			dev_err(dev, "读取当前Bank失败: %d\n", ret);
