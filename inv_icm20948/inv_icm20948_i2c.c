@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (C) 2024 Invensense, Inc.
+ * Copyright (C) 2025 Invensense, Inc.
  */
 
 #include <linux/module.h>
@@ -64,6 +64,6 @@ static struct i2c_driver inv_icm20948_i2c_driver = {
 };
 module_i2c_driver(inv_icm20948_i2c_driver);
 
-MODULE_AUTHOR("InvenSense, Inc.");
+MODULE_AUTHOR("Nguyen Nhan");
 MODULE_DESCRIPTION("InvenSense ICM-20948 I2C driver");
 MODULE_LICENSE("GPL v2");
