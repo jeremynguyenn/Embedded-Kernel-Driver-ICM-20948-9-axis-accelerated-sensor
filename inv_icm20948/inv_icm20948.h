@@ -77,7 +77,7 @@
 #define INV_ICM20948_BIT_RAW_DATA_0_RDY_EN	BIT(0)
 
 #define INV_ICM20948_REG_INT_ENABLE_1		0x11
-#define INV_ICM20948_BIT_RAW_DATA_RDY_EN	BIT(0)  /* dữ liệu就绪中断使能位 */
+#define INV_ICM20948_BIT_RAW_DATA_RDY_EN	BIT(0)  /*Ready interrupt enable bit */
 #define INV_ICM20948_REG_INT_ENABLE_2		0x12
 #define INV_ICM20948_REG_INT_ENABLE_3		0x13
 
@@ -85,7 +85,7 @@
 #define INV_ICM20948_BIT_RAW_DATA_0_RDY_INT	BIT(0)
 
 #define INV_ICM20948_REG_INT_STATUS_1		0x1A
-#define INV_ICM20948_BIT_RAW_DATA_RDY_INT	BIT(0)  /* dữ liệu就绪中断状态位 */
+#define INV_ICM20948_BIT_RAW_DATA_RDY_INT	BIT(0)  /* Ready interrupt status bit*/
 #define INV_ICM20948_REG_INT_STATUS_2		0x1B
 #define INV_ICM20948_REG_INT_STATUS_3		0x1C
 
