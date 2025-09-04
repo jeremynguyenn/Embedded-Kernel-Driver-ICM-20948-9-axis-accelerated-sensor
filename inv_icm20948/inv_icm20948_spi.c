@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (C) 2024 Invensense, Inc.
+ * Copyright (C) 2025 Invensense, Inc.
  */
 
 #include <linux/kernel.h>
@@ -123,6 +123,6 @@ static void __exit inv_icm20948_spi_exit(void)
 module_init(inv_icm20948_spi_init);
 module_exit(inv_icm20948_spi_exit);
 
-MODULE_AUTHOR("Invensense, Inc.");
+MODULE_AUTHOR("Nguyen Nhan");
 MODULE_DESCRIPTION("Invensense ICM-20948 SPI driver");
 MODULE_LICENSE("GPL v2");
