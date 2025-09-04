@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
- * Copyright (C) 2024 Invensense, Inc.
+ * Copyright (C) 2025 Invensense, Inc.
  * 
  * This header is shared across modules; ensure it's included in Makefile dependencies.
  */
