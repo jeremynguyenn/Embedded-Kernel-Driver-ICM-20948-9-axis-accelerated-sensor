@@ -55,7 +55,7 @@ static int inv_icm20948_accel_read_raw(struct iio_dev *indio_dev,
 	__be16 data;
 	unsigned int bank_val;
 
-	/* 检查输入参数 */
+	/* Check input parameters */
 	if (!indio_dev)
 		return -EINVAL;
 
